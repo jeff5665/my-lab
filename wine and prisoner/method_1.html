@@ -1,0 +1,183 @@
+﻿<script type="text/javascript">
+var deadNum=parseInt(Math.random()*1000);
+var Man=(function(){
+	var Class={};
+	Class.create=function(id){
+		var man={};
+		man.id=id;
+		man.drinked=[];
+		man.isDead=false;
+		man.checkDead=function(deadNum,drinkTime){
+			if(man.isDead){
+				return 2;
+			}
+			
+			for(var i=0;i<man.drinked[drinkTime].length;i++){
+				if(deadNum==man.drinked[drinkTime][i]){
+					man.isDead=true;
+					return 1;
+				}
+			}
+			return 0;
+		
+		}
+		
+		man.drink=function(arr){
+			man.drinked.push(arr);
+		}
+		
+		return man;
+	
+	}
+	return Class;
+})();
+
+var Rules=(function(){
+	var rules={};
+	var deadNum=0;
+	rules.init=function(num){
+		deadNum=num||0;
+		rules.drinkTimes=0;
+		var manArr=[];
+		for(var i=0;i<10;i++){
+			manArr[i]=Man.create(i);
+		}
+		rules.manArr=manArr;
+		step1();
+		step2();
+		step3();
+		step4();
+		step5();
+		return rules.getDeadNum();
+	}
+	
+	rules.whoDeadAtTimes=function(times){
+		var man;
+		
+		for(var i=0;i<rules.manArr.length;i++){
+			man=rules.manArr[i];
+			if(man.checkDead(deadNum,times)===1){
+				
+				return man.id;
+			}
+		}
+	}
+	
+	
+	rules.whoWillDead=function(){
+		var deadArr=[];
+		for(var j=0;j<rules.drinkTimes;j++){
+			deadArr.push(rules.whoDeadAtTimes(j));
+		}
+		
+		return deadArr;
+	}
+	
+	rules.getDeadNum=function(){
+		var deadArr=rules.whoWillDead();
+		//console.log(deadArr);
+		if(deadArr[1]===undefined){
+			deadArr[1]=deadArr[0]
+			if(deadArr[2]===undefined){
+				deadArr[2]=deadArr[0];
+			}
+		}else{
+			if(deadArr[2]===undefined){
+				deadArr[2]=deadArr[3]!==undefined?(10+deadArr[3]-1)%10:(10+deadArr[4]-2)%10;
+			
+			}
+		
+		}
+		
+		var _deadNum=deadArr[0]*100+deadArr[1]*10+deadArr[2];
+		return _deadNum;
+	
+	}
+	
+	
+	function step1(){
+		var wineArr=initWine();
+		var j=0;
+		for(var i=0;i<1000;i++){
+			j=parseInt(i/100);
+			wineArr[j].push(i);
+		}
+		letAllDrink(wineArr);
+	}
+	
+	function step2(){
+		var wineArr=initWine();
+		var j=0;
+		for(var i=0;i<1000;i++){
+			j=(parseInt(i/10))%10;
+			
+			wineArr[j].push(i);
+		}
+		
+		letAllDrink(wineArr);
+	}
+	
+	function step3(){
+		var wineArr=initWine();
+		var j=0;
+		for(var i=0;i<1000;i++){
+			j=i%10;
+			wineArr[j].push(i);
+		}
+		
+		letAllDrink(wineArr);
+	}
+	
+	function step4(){
+		var wineArr=initWine();
+		var j=0;
+		for(var i=0;i<1000;i++){
+			j=((i)%10+1)%10;
+			wineArr[j].push(i);
+		}
+		
+		letAllDrink(wineArr);
+	}
+	
+	function step5(){
+		var wineArr=initWine();
+		var j=0;
+		for(var i=0;i<1000;i++){
+			j=((i)%10+2)%10;
+			wineArr[j].push(i);
+		}
+		
+		letAllDrink(wineArr);
+	}
+	
+	
+	function letAllDrink(wineArr){
+		for(var k=0;k<10;k++){
+			rules.manArr[k].drink(wineArr[k]);
+		}
+		rules.drinkTimes++;
+	}
+	
+	function initWine(){
+		return [[],[],[],[],[],[],[],[],[],[]];
+	}
+	
+	
+	
+	
+	return rules;
+	
+})();
+
+
+for(var i=0;i<1000;i++){
+	if(Rules.init(i)!==i){
+		console.log(i);
+	}
+}
+
+
+
+
+
+</script>
