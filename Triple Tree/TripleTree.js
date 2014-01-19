@@ -108,6 +108,10 @@ TripleTree.prototype={
     },
     find:function(val){
         var _node=this.root;
+        if(_node===false){
+            alert('亲，根节点呢...');
+            return false;
+        }
         while(_node!==false){
             if(_node.val>val){
                 if(_node.leftChild!==false){
@@ -134,14 +138,28 @@ TripleTree.prototype={
                 }
             }
         }
-        return '亲，根节点都没呢';
+        return false;
     },
 
     ajust:function(delNode,ajustNode){
         var parentNode;
-
+        //----------删除ajustNode父节点指向ajustNode的指针----------------
+        if(ajustNode.parent.leftChild===ajustNode){
+            ajustNode.parent.leftChild=false;
+        }
+        if(ajustNode.parent.rightChild===ajustNode){
+            ajustNode.parent.rightChild=false;
+        }
+        if(ajustNode.parent.midChild===ajustNode){
+            ajustNode.parent.midChild=false;
+        }
+        //------------------------------
         if(delNode.parent!==false){//删除的节点非root时
             parentNode=delNode.parent;
+
+
+
+
             //--------将parentNode指向要删除元素的指针改为指向ajustNode---------------------
             if(parentNode.leftChild===delNode){
                 parentNode.leftChild=ajustNode;
@@ -157,17 +175,19 @@ TripleTree.prototype={
             }
         }
 
+
+
         //----------把删除节点的左右子节点指向ajustNode-----------------
-        if(delNode.leftChild!==ajustNode){
-            if(delNode.leftChild!==false){
-                ajustNode.leftChild=delNode.leftChild;
-                delNode.leftChild.parent=ajustNode;
-            }
-            if(delNode.rightChild!==false){
-                ajustNode.rightChild=delNode.rightChild;
-                delNode.rightChild.parent=ajustNode;
-            }
+        if(delNode.leftChild!==false){
+            ajustNode.leftChild=delNode.leftChild;
+            ajustNode.leftChild.parent=ajustNode;
         }
+        if(delNode.rightChild!==false){
+            ajustNode.rightChild=delNode.rightChild;
+            ajustNode.rightChild.parent=ajustNode;
+        }
+
+
 
         if(delNode.parent===false){
             this.root=ajustNode;
@@ -178,6 +198,10 @@ TripleTree.prototype={
 
     deleteNodeByVal:function(val){
         var delNode=this.find(val);
+        if(delNode===false){
+            alert('亲，节点没找到');
+            return this;
+        }
         var ajustNode;
         if(delNode!==false){
             if(delNode.rightChild!==false){//右子树存在
@@ -194,16 +218,6 @@ TripleTree.prototype={
                         }
                     }
                 }
-
-
-                if(ajustNode.rightChild!==false){
-                    ajustNode.parent[ajustNode.checkNode()]=ajustNode.rightChild;
-                    ajustNode.rightChild=ajustNode.parent;
-                  //  ajustNode.parent.leftChild=ajustNode.rightChild;
-                }else{
-                    ajustNode.parent[ajustNode.checkNode()]=false;
-                    //ajustNode.parent.leftChild=false;
-                }
                 this.ajust(delNode,ajustNode);//调整节点
                 delNode.remove();
             }else{//存在左子树
@@ -213,17 +227,12 @@ TripleTree.prototype={
                     this.ajust(delNode,ajustNode);
                     delNode.remove();
                 }else{//没有孩子节点
-
-
                     if(delNode.parent===false){
                         this.root=false;
                     }
                     delNode.remove();
-
                 }
-
             }
-
         }else{
             alert('亲，没找到你要删的');
         }
@@ -282,10 +291,7 @@ TripleTree.prototype={
                 cxt.restore();
             }
             cxt.fillText(node.val,node.x,node.y);
-
         }
-
-
     }
 };
 
